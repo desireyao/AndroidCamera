@@ -41,6 +41,16 @@ public class CameraAndVideoActivity extends AppCompatActivity implements Surface
     public static final String TAG = "TAG";
     private static int MAX_VIDEO_DURATION = 1 * 60 * 1000;  //录制视频的最大时长
 
+    // 照片路径
+    private String IMG_FILE_PATH
+            = Environment.getExternalStoragePublicDirectory("DCIM").getAbsolutePath() + "/Camera";
+
+//    // 视频缓存路径
+//    private String VIDEO_TEMP_FILE_PATH = IMG_FILE_PATH + "/TEMP";
+
+    // 视频保存路径
+    private String VIDEO_FILE_PATH = IMG_FILE_PATH;
+
     private int CAMERA_MODE = 0;  // 拍照模式
     private int VIDEO_MODE = 1;   // 录像模式
     private int CURRENT_MODE = CAMERA_MODE;
@@ -61,7 +71,7 @@ public class CameraAndVideoActivity extends AppCompatActivity implements Surface
     private SurfaceView surfaceView;
 
     private IOrientationEventListener orienListener;
-    private Lock lock = new ReentrantLock();                          // 锁对象
+    private Lock mLock = new ReentrantLock();                          // 锁对象
 
     private Button btn_record;
     private Button btn_switch;
@@ -383,8 +393,8 @@ public class CameraAndVideoActivity extends AppCompatActivity implements Surface
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        lock.lock();
-                        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
+                        mLock.lock();
+                        File dir = new File(IMG_FILE_PATH);
                         if (!dir.exists()) {
                             dir.mkdirs();      // 创建文件夹
                         }
@@ -398,7 +408,7 @@ public class CameraAndVideoActivity extends AppCompatActivity implements Surface
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        lock.unlock();
+                        mLock.unlock();
                     }
                 }).start();
             }
@@ -411,13 +421,14 @@ public class CameraAndVideoActivity extends AppCompatActivity implements Surface
     protected void startRecord() {
         try {
             //视频存储路径
-            String name = "VID_" + DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance()) + ".mp4";
-            File dir = new File(Environment.getExternalStoragePublicDirectory("DCIM"),"Camera");
-            if (!dir.exists()) {
-                dir.mkdirs();
+            String file_name = "VID_" + DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance()) + ".mp4";
+
+            File videoDir = new File(VIDEO_FILE_PATH);
+            if (!videoDir.exists()) {
+                videoDir.mkdirs();
             }
             // 视频存储的最终文件
-            File file = new File(dir, name);
+            File file = new File(VIDEO_FILE_PATH, file_name);
 
             //初始化一个MediaRecorder
             if (mediaRecorder == null) {
