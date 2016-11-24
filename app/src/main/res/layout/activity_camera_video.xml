@@ -43,4 +43,15 @@
         android:visibility="gone"
         />
 
+    <TextView
+        android:id="@+id/tv_record_time"
+        android:text="00:00"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_record"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="22dp"
+        android:textColor="@android:color/white"
+       />
+
 </RelativeLayout>

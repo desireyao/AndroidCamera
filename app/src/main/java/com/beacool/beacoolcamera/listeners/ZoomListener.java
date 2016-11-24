@@ -25,7 +25,7 @@ public abstract class ZoomListener implements View.OnTouchListener {
                 mode = 1;
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("TAG","moveDuration: " + moveDuration);
+//                Log.e("TAG","moveDuration: " + moveDuration);
                 if(moveDuration <= 5) {
                     focusTouch(event.getX(),event.getY());
                 }
