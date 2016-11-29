@@ -24,6 +24,8 @@ import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -280,6 +282,7 @@ public class CameraManager implements SurfaceHolder.Callback {
             List<Camera.Size> pictureSizeList = mParameters.getSupportedPictureSizes();
             /* 从列表中选取合适的分辨率 */
             Camera.Size picSize = getProperSize4Ratio(pictureSizeList, (float) mSurfaceview.getHeight() / mSurfaceview.getWidth());
+
             mParameters.setPictureSize(picSize.width, picSize.height);
             Log.e("TAG", "最终设置的picsize: picSize.width: " + picSize.width + " picSize.height: " + picSize.height);
 
@@ -327,12 +330,12 @@ public class CameraManager implements SurfaceHolder.Callback {
                     @Override
                     public void run() {
                         mLock.lock();
-                        File dir = new File(IMG_FILE_PATH);
+                        final File dir = new File(IMG_FILE_PATH);
                         if (!dir.exists()) {
                             dir.mkdirs();      // 创建文件夹
                         }
                         String name = "IMG_" + DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance()) + ".jpg";
-                        File file = new File(dir, name);
+                        final File file = new File(dir, name);
                         FileOutputStream outputStream;
                         try {
                             outputStream = new FileOutputStream(file);
@@ -341,6 +344,7 @@ public class CameraManager implements SurfaceHolder.Callback {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        scanFile(file.getAbsolutePath());
                         mHandler.sendEmptyMessage(TAKE_PHOTO_SUCCESS);
                         isTakingPic = false;
                         mLock.unlock();
@@ -348,6 +352,19 @@ public class CameraManager implements SurfaceHolder.Callback {
                 }).start();
             }
         });
+    }
+
+    /**
+     * 扫描文件
+     * @param path
+     */
+    private void scanFile(String path){
+        MediaScannerConnection.scanFile(mActivity,new String[] {path},
+                null, new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.e("TAG","onScanCompleted");
+                    }
+                });
     }
 
     /**
