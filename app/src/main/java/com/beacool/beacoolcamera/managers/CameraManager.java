@@ -61,11 +61,11 @@ public class CameraManager implements SurfaceHolder.Callback {
             = Environment.getExternalStoragePublicDirectory("DCIM").getAbsolutePath() + "/Camera";
 
     // 视频保存路径
-    private String VIDEO_FILE_PATH = IMG_FILE_PATH;
+    private String VIDEO_FILE_PATH = Environment.getExternalStoragePublicDirectory("DCIM").getAbsolutePath() + "/Video";
 
     // 视频缓存路径
     private String VIDEO_TEMP_FILE_PATH
-            = Environment.getExternalStoragePublicDirectory("DCIM").getAbsolutePath() + "/Camera/TEMP";
+            = Environment.getExternalStoragePublicDirectory("DCIM").getAbsolutePath() + "/Video/TEMP";
 
     private String CURRTRT_VIDEO_NAME;
 
@@ -804,6 +804,7 @@ public class CameraManager implements SurfaceHolder.Callback {
                 if (tempfile.length() > 1024) {
                     File file = new File(VIDEO_FILE_PATH, CURRTRT_VIDEO_NAME);
                     copyFile(tempfile.getAbsolutePath(), file.getAbsolutePath());
+                    scanFile(file.getAbsolutePath());
                     mHandler.sendEmptyMessage(VIDEO_SAVE_SUCCESS);
                 }
                 tempfile.delete();
